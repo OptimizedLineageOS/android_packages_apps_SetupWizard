@@ -55,7 +55,6 @@ public class CyanogenSettingsPage extends SetupPage {
 
     public static final String TAG = "CyanogenSettingsPage";
 
-    public static final String KEY_SEND_METRICS = "send_metrics";
     public static final String DISABLE_NAV_KEYS = "disable_nav_keys";
     public static final String KEY_APPLY_DEFAULT_THEME = "apply_default_theme";
     public static final String KEY_BUTTON_BACKLIGHT = "pre_navbar_button_backlight";
@@ -131,19 +130,8 @@ public class CyanogenSettingsPage extends SetupPage {
                 }
             }
         });
-        handleEnableMetrics();
         handleDefaultThemeSetup();
         handlePrivacyGuard();
-    }
-
-    private void handleEnableMetrics() {
-        Bundle privacyData = getData();
-        if (privacyData != null
-                && privacyData.containsKey(KEY_SEND_METRICS)) {
-            CMSettings.Secure.putInt(mContext.getContentResolver(),
-                    CMSettings.Secure.STATS_COLLECTION, privacyData.getBoolean(KEY_SEND_METRICS)
-                            ? 1 : 0);
-        }
     }
 
     private void handleDefaultThemeSetup() {
@@ -193,7 +181,6 @@ public class CyanogenSettingsPage extends SetupPage {
         private View mKillSwitchView;
         private TextView mKillSwitchTitle;
         private ImageView mKillSwitchStatus;
-        private View mMetricsRow;
         private View mDefaultThemeRow;
         private View mNavKeysRow;
         private View mPrivacyGuardRow;
@@ -204,16 +191,6 @@ public class CyanogenSettingsPage extends SetupPage {
 
         private boolean mHideNavKeysRow = false;
         private boolean mHideThemeRow = false;
-
-
-        private View.OnClickListener mMetricsClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean checked = !mMetrics.isChecked();
-                mMetrics.setChecked(checked);
-                mPage.getData().putBoolean(KEY_SEND_METRICS, checked);
-            }
-        };
 
         private View.OnClickListener mDefaultThemeClickListener = new View.OnClickListener() {
             @Override
@@ -283,19 +260,6 @@ public class CyanogenSettingsPage extends SetupPage {
                 }
             }
 
-            mMetricsRow = mRootView.findViewById(R.id.metrics);
-            mMetricsRow.setOnClickListener(mMetricsClickListener);
-            String metricsHelpImproveCM =
-                    getString(R.string.services_help_improve_cm, getString(R.string.os_name));
-            String metricsSummary = getString(R.string.services_metrics_label,
-                    metricsHelpImproveCM, getString(R.string.os_name));
-            final SpannableStringBuilder metricsSpan = new SpannableStringBuilder(metricsSummary);
-            metricsSpan.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD),
-                    0, metricsHelpImproveCM.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            TextView metrics = (TextView) mRootView.findViewById(R.id.enable_metrics_summary);
-            metrics.setText(metricsSpan);
-            mMetrics = (CheckBox) mRootView.findViewById(R.id.enable_metrics_checkbox);
-
             mDefaultThemeRow = mRootView.findViewById(R.id.theme);
             mHideThemeRow = hideThemeSwitch(getActivity());
             if (mHideThemeRow) {
@@ -353,16 +317,7 @@ public class CyanogenSettingsPage extends SetupPage {
             updateMetricsOption();
             updateThemeOption();
         }
-
-        private void updateMetricsOption() {
-            final Bundle myPageBundle = mPage.getData();
-            boolean metricsChecked =
-                    !myPageBundle.containsKey(KEY_SEND_METRICS) || myPageBundle
-                            .getBoolean(KEY_SEND_METRICS);
-            mMetrics.setChecked(metricsChecked);
-            myPageBundle.putBoolean(KEY_SEND_METRICS, metricsChecked);
-        }
-
+	
         private void updateThemeOption() {
             if (!mHideThemeRow) {
                 final Bundle myPageBundle = mPage.getData();
