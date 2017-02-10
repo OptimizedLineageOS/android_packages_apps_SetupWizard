@@ -50,7 +50,6 @@ public class SetupWizardUtils {
     private static final String TAG = SetupWizardUtils.class.getSimpleName();
 
     public static final String GOOGLE_SETUPWIZARD_PACKAGE = "com.google.android.setupwizard";
-    private static final String MODMOD_PACKAGE = "com.cyanogen.ambient.core";
 
     private SetupWizardUtils(){}
 
@@ -99,6 +98,11 @@ public class SetupWizardUtils {
                     android.provider.Settings.Global.MOBILE_DATA, enabled ? 1 : 0);
             tm.setDataEnabled(enabled);
         }
+    }
+
+    public static boolean hasWifi(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_WIFI);
     }
 
     public static boolean hasTelephony(Context context) {
@@ -196,14 +200,6 @@ public class SetupWizardUtils {
     public static boolean hasGMS(Context context) {
         return GooglePlayServicesUtil.isGooglePlayServicesAvailable(context) !=
                 ConnectionResult.SERVICE_MISSING;
-    }
-
-    /**
-     * The assumption here is that if ambient core is present, we have MODs.
-     * In the future we will link against the SDK and use the util there.
-     */
-    public static boolean canHasModMOD(Context context) {
-        return isPackageInstalled(context, MODMOD_PACKAGE);
     }
 
     public static boolean accountExists(Context context, String accountType) {
